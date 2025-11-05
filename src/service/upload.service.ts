@@ -17,13 +17,21 @@ const getFilePath = async (uri: string) => {
   return uri;
 };
 
-const getMimeTypeFromUrl = async (url: string) => {
+const getMimeTypeFromUrl = async (url: string): Promise<string> => {
   try {
-    const head = await axios.head(url);
-    return head.headers['content-type'] || 'application/octet-stream';
-  } catch {
-    return 'application/octet-stream';
+    const response = await fetch(url, { method: 'HEAD' });
+    const type = response.headers.get('content-type');
+    if (type) return type;
+  } catch (e: any) {
+    console.warn('Failed to detect mime type:', e.message);
   }
+
+  const ext = url.split('.').pop()?.toLowerCase() || '';
+  if (ext.includes('jpg') || ext.includes('jpeg')) return 'image/jpeg';
+  if (ext.includes('png')) return 'image/png';
+  if (ext.includes('pdf')) return 'application/pdf';
+
+  return 'application/octet-stream';
 };
 
 const mimeToExt = (mimeType: string) => {
@@ -65,32 +73,23 @@ export const uploadToCloudinary = async ({
     }
 
     const formData = new FormData();
-
-    if (mimeType === 'application/pdf') {
-      formData.append('file', {
-        uri: fileUri,
-        name: fileName,
-        type: mimeType,
-      } as any);
-    } else {
-      const base64 = await RNFS.readFile(filePath, 'base64');
-      const fileData = `data:${mimeType};base64,${base64}`;
-      formData.append('file', fileData);
-    }
-
+    formData.append('file', {
+      uri: fileUri,
+      name: fileName,
+      type: mimeType,
+    } as any);
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
     formData.append('folder', 'prescriptions');
 
-    const uploadType = mimeType === 'application/pdf' ? 'raw' : 'image';
+    const isPDF = mimeType === 'application/pdf';
+    const uploadEndpoint = isPDF
+      ? `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/raw/upload`
+      : `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
 
-    const response = await axios.post(
-      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${uploadType}/upload`,
-      formData,
-      {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        timeout: TIMEOUT,
-      },
-    );
+    const response = await axios.post(uploadEndpoint, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: TIMEOUT,
+    });
 
     if (response.status === 200 && response.data.secure_url) {
       return response.data;
@@ -128,8 +127,7 @@ export const uploadFromUrl = async (url: string) => {
   let downloadDest = '';
   try {
     const mimeType = await getMimeTypeFromUrl(url);
-
-    const ext = mimeToExt(mimeType);
+    const ext = mimeToExt(mimeType) || 'jpg';
     const fileName = `file_${Date.now()}.${ext}`;
     downloadDest = `${RNFS.TemporaryDirectoryPath}/${fileName}`;
 
@@ -142,15 +140,23 @@ export const uploadFromUrl = async (url: string) => {
       throw new Error('Failed to download file from URL');
     }
 
+    const exists = await RNFS.exists(downloadDest);
+
+    if (!exists) {
+      throw new Error('File not found after download');
+    }
+
+    console.log(mimeType);
+
     const uploadedData = await uploadToCloudinary({
-      fileUri: downloadDest,
+      fileUri: `file://${downloadDest}`,
       fileName,
       mimeType,
     });
 
     await RNFS.unlink(downloadDest);
 
-    if (uploadedData && uploadedData.secure_url) {
+    if (uploadedData?.secure_url) {
       return uploadedData;
     } else {
       showAlert({ title: 'Error', message: 'Cloudinary upload failed.' });

@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { colors } from '../../styles/colors';
 import { Fonts } from '../../styles/fonts';
+import CustomImage from '../global/CustomImage';
 
 interface PharmacyCardProps {
   name: string;
@@ -21,9 +22,10 @@ const PharmacyCard: React.FC<PharmacyCardProps> = ({
   onPress,
 }) => (
   <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
-    <Image
-      source={typeof image === 'string' ? { uri: image } : image}
-      style={styles.image}
+    <CustomImage
+      source={image}
+      imageStyle={styles.image}
+      containerStyle={styles.fullImage}
     />
     <View style={styles.info}>
       <Text style={styles.name}>{name}</Text>
@@ -48,9 +50,14 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     marginVertical: 20,
   },
-  image: {
+  fullImage: {
     width: '100%',
     height: 100,
+    overflow: 'hidden',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
   },
   info: {
     padding: 8,

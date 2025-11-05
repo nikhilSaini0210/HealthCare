@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import {
   Modal,
   StyleSheet,
@@ -6,6 +6,8 @@ import {
   Dimensions,
   TouchableOpacity,
   Platform,
+  ActivityIndicator,
+  Text,
 } from 'react-native';
 import Pdf from 'react-native-pdf';
 import Icon from '../global/Icon';
@@ -18,6 +20,7 @@ interface Props {
 }
 
 const CustomPDFModal: FC<Props> = ({ visible, pdfUri, onClose }) => {
+  const [progress, setProgress] = useState(0);
   if (!pdfUri) return null;
 
   return (
@@ -38,11 +41,22 @@ const CustomPDFModal: FC<Props> = ({ visible, pdfUri, onClose }) => {
           />
         </TouchableOpacity>
 
+        {progress < 1 && (
+          <View style={styles.progressContainer}>
+            <ActivityIndicator size="large" color={colors.white} />
+            <Text style={styles.progressText}>
+              {Math.floor(progress * 100)}%
+            </Text>
+          </View>
+        )}
+
         <Pdf
           source={{ uri: pdfUri }}
           style={styles.pdf}
           onError={(error: any) => console.log('PDF load error:', error)}
           trustAllCerts={false}
+          onLoadProgress={(percent: number) => setProgress(percent)}
+          onLoadComplete={() => setProgress(1)}
         />
       </View>
     </Modal>
@@ -73,5 +87,16 @@ const styles = StyleSheet.create({
     width: width * 0.95,
     height: height * 0.9,
     borderRadius: 8,
+  },
+  progressContainer: {
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  progressText: {
+    color: colors.white,
+    fontSize: 18,
+    marginTop: 8,
+    fontWeight: '600',
   },
 });

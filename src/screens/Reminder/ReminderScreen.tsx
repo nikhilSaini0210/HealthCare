@@ -3,7 +3,6 @@ import {
   FlatList,
   Text,
   View,
-  Image,
   TouchableOpacity,
   Animated,
   StyleSheet,
@@ -22,6 +21,7 @@ import { Fonts } from '../../styles/fonts';
 import { colors } from '../../styles/colors';
 import PdfIcon from '../../assets/icons/PdfIcon';
 import Icon from '../../components/global/Icon';
+import CustomImage from '../../components/global/CustomImage';
 
 const statusGradients: Record<string, string[][]> = {
   pending: [
@@ -149,9 +149,10 @@ const ReminderScreen: FC = () => {
             activeOpacity={0.7}
           >
             {item.type === 'image' ? (
-              <Image
-                source={{ uri: item.thumbnailUri }}
-                style={styles.thumbnail}
+              <CustomImage
+                source={item.fileUri}
+                imageStyle={styles.thumbnail}
+                containerStyle={styles.imageBox}
               />
             ) : (
               <View style={styles.pdfCon}>
@@ -252,9 +253,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
-  thumbnail: {
+  imageBox: {
     width: '100%',
     height: 150,
+    overflow: 'hidden',
+  },
+  thumbnail: {
+    width: '100%',
+    height: '100%',
   },
   textContainer: {
     padding: 12,

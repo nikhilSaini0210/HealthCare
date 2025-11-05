@@ -3,13 +3,13 @@ import {
   Modal,
   StyleSheet,
   View,
-  Image,
   Dimensions,
   TouchableOpacity,
   Platform,
 } from 'react-native';
 import Icon from '../global/Icon';
 import { colors } from '../../styles/colors';
+import CustomImage from '../global/CustomImage';
 
 interface Props {
   visible: boolean;
@@ -37,8 +37,11 @@ const CustomImageModal: FC<Props> = ({ visible, imageUri, onClose }) => {
             name="arrow-back"
           />
         </TouchableOpacity>
-
-        <Image source={{ uri: imageUri }} style={styles.fullImage} />
+        <CustomImage
+          source={imageUri}
+          imageStyle={styles.image}
+          containerStyle={styles.fullImage}
+        />
       </View>
     </Modal>
   );
@@ -67,6 +70,11 @@ const styles = StyleSheet.create({
   fullImage: {
     width: width * 0.9,
     height: height * 0.8,
+    overflow: 'hidden',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
     resizeMode: 'contain',
     borderRadius: 12,
   },

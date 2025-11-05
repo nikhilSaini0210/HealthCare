@@ -1,6 +1,6 @@
 import {
   Animated,
-  Image,
+  Keyboard,
   ScrollView,
   StyleSheet,
   Text,
@@ -32,6 +32,7 @@ import TouchableText from '../../components/global/TouchableText';
 import mockPrescriptions from '../../utils/data';
 import PrescriptionDB from '../../service/prescription.service';
 import PdfIcon from '../../assets/icons/PdfIcon';
+import CustomImage from '../../components/global/CustomImage';
 
 const PharmacyScreen: FC = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -112,14 +113,14 @@ const PharmacyScreen: FC = () => {
       if (res) {
         if (selectedImage) {
           const updatedData = {
-            url: res.url,
+            url: res.secure_url,
             format: 'image',
           };
           await updateRandomPrescription(updatedData);
           setSelectedImage('');
         } else {
           const updatedData = {
-            url: res.url,
+            url: res.secure_url,
             format: 'pdf',
           };
           await updateRandomPrescription(updatedData);
@@ -148,6 +149,7 @@ const PharmacyScreen: FC = () => {
   };
 
   const pickLink = async () => {
+    Keyboard.dismiss();
     if (!linkSeleted.trim()) {
       return;
     }
@@ -157,6 +159,12 @@ const PharmacyScreen: FC = () => {
       console.log(res, linkSeleted);
       if (res) {
         setShowLink(false);
+        setLinkSelected('');
+        const updatedData = {
+          url: res.secure_url,
+          format: res.resource_type === 'raw' ? 'pdf' : 'image',
+        };
+        await updateRandomPrescription(updatedData);
         showAlert({
           title: 'Success',
           message: 'Link uploaded successfully.',
@@ -206,9 +214,10 @@ const PharmacyScreen: FC = () => {
 
         {selectedImage ? (
           <View style={styles.previewContainer}>
-            <Image
-              source={{ uri: selectedImage }}
-              style={styles.previewImage}
+            <CustomImage
+              source={selectedImage}
+              imageStyle={styles.image}
+              containerStyle={styles.imageBox}
             />
             <View style={styles.btnCont}>
               <TouchableText
@@ -350,6 +359,17 @@ const styles = StyleSheet.create({
   previewImage: {
     width: '100%',
     height: 220,
+    borderRadius: 12,
+    resizeMode: 'cover',
+  },
+  imageBox: {
+    width: '100%',
+    height: 220,
+    overflow: 'hidden',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
     borderRadius: 12,
     resizeMode: 'cover',
   },
