@@ -5,12 +5,16 @@ import AuthHeader from '../../components/auth/AuthHeader';
 import CustomInput from '../../components/global/CustomInput';
 import Account from '../../components/auth/Account';
 import CustomButton from '../../components/global/CustomButton';
-import { navigate, resetAndNavigate } from '../../utils/NavigationUtil';
+import { navigate } from '../../utils/NavigationUtil';
 import { Routes } from '../../navigation/Routes';
 import { validateInput } from '../../utils/Valdations';
 import EmailIcon from '../../assets/icons/EmailIcon';
 import { colors } from '../../styles/colors';
 import PasswordIcon from '../../assets/icons/PasswordIcon';
+import makeRequest from '../../api/interceptor';
+import { ACCESS_TOKEN_KEY, endPoints } from '../../api/config';
+import StorageService from '../../service/storage.service';
+import { showAlert } from '../../utils/AlertUtil';
 
 const RegisterScreen: FC = () => {
   const [email, setEmail] = useState('');
@@ -19,6 +23,7 @@ const RegisterScreen: FC = () => {
   const [passwordError, setPasswordError] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [passwordConfirmError, setPasswordConfirmError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const validateEmail = (text: string) => {
     setEmail(text.trim());
@@ -55,7 +60,7 @@ const RegisterScreen: FC = () => {
     }
   };
 
-  const onRegister = () => {
+  const onRegister = async () => {
     validateEmail(email);
     validatePassword(password);
     validateConfirmPassword(passwordConfirm);
@@ -75,8 +80,39 @@ const RegisterScreen: FC = () => {
       setPasswordConfirmError('Passwords do not match');
       return;
     }
-
-    resetAndNavigate(Routes.MainApp);
+    setLoading(true);
+    try {
+      const { response } = await makeRequest({
+        method: 'POST',
+        url: endPoints.register,
+        data: { email, password },
+      });
+      if (response?.data.success) {
+        const { token, message } = response?.data;
+        await StorageService.setItem(ACCESS_TOKEN_KEY, token);
+        showAlert({
+          title: 'Success',
+          message: message,
+          onOkPress: () => {
+            navigate(Routes.Loader, { routes: Routes.MainApp });
+          },
+        });
+      } else {
+        showAlert({
+          title: 'Registration Failed',
+          message:
+            response?.data?.message ||
+            'Unable to register. Please try again later.',
+        });
+      }
+    } catch (error: any) {
+      const errMsg =
+        error?.response?.data?.message ||
+        'Something went wrong. Please check your internet connection.';
+      showAlert({ title: 'Error', message: errMsg });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onLogin = () => {
@@ -131,6 +167,7 @@ const RegisterScreen: FC = () => {
           title="REGISTER"
           onPress={onRegister}
           style={styles.btn}
+          loading={loading}
         />
       </View>
     </CustomSafeAreaView>

@@ -7,17 +7,22 @@ import { validateInput } from '../../utils/Valdations';
 import EmailIcon from '../../assets/icons/EmailIcon';
 import PasswordIcon from '../../assets/icons/PasswordIcon';
 import CustomButton from '../../components/global/CustomButton';
-import { navigate, replace, resetAndNavigate } from '../../utils/NavigationUtil';
+import { navigate } from '../../utils/NavigationUtil';
 import { Routes } from '../../navigation/Routes';
 import AuthHeader from '../../components/auth/AuthHeader';
 import TouchableText from '../../components/global/TouchableText';
 import Account from '../../components/auth/Account';
+import makeRequest from '../../api/interceptor';
+import StorageService from '../../service/storage.service';
+import { ACCESS_TOKEN_KEY, endPoints } from '../../api/config';
+import { showAlert } from '../../utils/AlertUtil';
 
 const LoginScreen: FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const validateEmail = (text: string) => {
     setEmail(text.trim());
@@ -43,18 +48,50 @@ const LoginScreen: FC = () => {
     }
   };
 
-  const onLogin = () => {
-    // validateEmail(email);
-    // validatePassword(password);
+  const onLogin = async () => {
+    validateEmail(email);
+    validatePassword(password);
 
-    // if (emailError || passwordError) return;
+    if (emailError || passwordError) return;
 
-    // if (!email || !password) {
-    //   setEmailError(!email ? 'Email is required' : '');
-    //   setPasswordError(!password ? 'Password is required' : '');
-    //   return;
-    // }
-    navigate(Routes.Loader, {routes: Routes.MainApp});
+    if (!email || !password) {
+      setEmailError(!email ? 'Email is required' : '');
+      setPasswordError(!password ? 'Password is required' : '');
+      return;
+    }
+    setLoading(true);
+    try {
+      const { response } = await makeRequest({
+        method: 'POST',
+        url: endPoints.login,
+        data: { email, password },
+      });
+      if (response?.data.success) {
+        const { token, message } = response?.data;
+        await StorageService.setItem(ACCESS_TOKEN_KEY, token);
+        showAlert({
+          title: 'Success',
+          message: message,
+          onOkPress: () => {
+            navigate(Routes.Loader, { routes: Routes.MainApp });
+          },
+        });
+      } else {
+        showAlert({
+          title: 'Login Failed',
+          message:
+            response?.data?.message ||
+            'Unable to Login. Please try again later.',
+        });
+      }
+    } catch (error: any) {
+      const errMsg =
+        error?.response?.data?.message ||
+        'Something went wrong. Please check your internet connection.';
+      showAlert({ title: 'Error', message: errMsg });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onForgetPassword = () => {
@@ -103,7 +140,12 @@ const LoginScreen: FC = () => {
           onPress={onRegister}
         />
 
-        <CustomButton title="LOGIN" onPress={onLogin} style={styles.btn} />
+        <CustomButton
+          loading={loading}
+          title="LOGIN"
+          onPress={onLogin}
+          style={styles.btn}
+        />
       </View>
     </CustomSafeAreaView>
   );

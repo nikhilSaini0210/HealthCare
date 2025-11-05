@@ -25,6 +25,22 @@ export interface IconProps {
 }
 
 export interface SectionsProps {
-    id: number;
-    label: string;
+  id: number;
+  label: string;
+}
+
+export type PrescType = 'image' | 'pdf' | 'link';
+
+export interface Prescription {
+  id: string;
+  patientName: string;
+  type: PrescType;
+  fileName: string;
+  fileUri: string;
+  thumbnailUri?: string;
+  notes?: string;
+  uploadedBy?: 'user' | 'clinic' | 'hospital' | 'doctor' | 'lab';
+  status?: 'pending' | 'processed' | 'expired';
+  createdAt: string;
+  reminderDate?: string;
 }

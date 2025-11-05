@@ -1,14 +1,32 @@
 import React, { FC, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, Dimensions } from 'react-native';
-import { resetAndNavigate } from '../../utils/NavigationUtil';
+import { navigate, resetAndNavigate } from '../../utils/NavigationUtil';
 import { Routes } from '../../navigation/Routes';
 import { colors } from '../../styles/colors';
 import { Fonts } from '../../styles/fonts';
+import StorageService from '../../service/storage.service';
+import { ACCESS_TOKEN_KEY } from '../../api/config';
 
 const { width } = Dimensions.get('window');
 
 const SplashScreen: FC = () => {
   const scale = useRef(new Animated.Value(0)).current;
+
+  const checkUserLogin = async () => {
+    try {
+      const { success, data: token } = await StorageService.getItem(
+        ACCESS_TOKEN_KEY,
+      );
+      if (success && token) {
+        navigate(Routes.Loader, {routes: Routes.MainApp});
+      } else {
+        resetAndNavigate(Routes.Login);
+      }
+    } catch (error) {
+      console.log('Splash check error:', error);
+      resetAndNavigate(Routes.Login);
+    }
+  };
 
   useEffect(() => {
     Animated.sequence([
@@ -23,7 +41,9 @@ const SplashScreen: FC = () => {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      setTimeout(() => resetAndNavigate(Routes.Login), 1500);
+      setTimeout(() => {
+        checkUserLogin();
+      }, 1500);
     });
   }, [scale]);
 

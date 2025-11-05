@@ -1,3 +1,4 @@
+import { ALLOWED_FORMATS, MAX_FILE_SIZE } from '../api/config';
 import { InputType } from '../types/interfaces';
 
 export const validateInput = (type: InputType, value: string): boolean => {
@@ -27,4 +28,21 @@ export const validateInput = (type: InputType, value: string): boolean => {
     default:
       return false;
   }
+};
+
+export const validateFileType = (
+  mimeType: string,
+  fileName: string,
+): boolean => {
+  if (ALLOWED_FORMATS.includes(mimeType)) return true;
+
+  const ext = fileName.toLowerCase().split('.').pop();
+  return ['png', 'jpeg', 'jpg', 'pdf'].includes(ext || '');
+};
+
+export const validateFileSize = (size: number): boolean => {
+  if (size > MAX_FILE_SIZE) {
+    return false;
+  }
+  return true;
 };
