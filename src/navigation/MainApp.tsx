@@ -8,8 +8,12 @@ import HomeScreen from '../screens/Home/HomeScreen';
 import PharmacyScreen from '../screens/Pharmacy/PharmacyScreen';
 import TabBarIcon from './TabBarIcon';
 import DefaultScreen from '../screens/Default/DefaultScreen';
+import { Dimensions, Platform } from 'react-native';
+import { hp, wp } from '../scale/responsive';
 
 const Tab = createBottomTabNavigator();
+
+const { width } = Dimensions.get('window');
 
 const screenOptions = ({
   route,
@@ -22,12 +26,28 @@ const screenOptions = ({
   tabBarInactiveTintColor: colors.inActiveTab,
   tabBarStyle: {
     backgroundColor: colors.bottomTabBackground,
-    height: 70,
-    paddingBottom: 8,
-    paddingTop: 8,
+    height: Platform.OS === 'ios' ? hp(9) : hp(8),
+    paddingBottom: Platform.OS === 'ios' ? hp(2) : hp(1),
+    paddingTop: hp(1),
+    borderTopLeftRadius: wp(4),
+    borderTopRightRadius: wp(4),
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-  tabBarIcon: ({ color, size, focused }) => (
-    <TabBarIcon name={route.name} color={color} size={size} focused={focused} />
+  tabBarIcon: ({ color, focused }) => (
+    <TabBarIcon
+      name={route.name}
+      color={color}
+      size={width < 400 ? wp(6) : wp(8)}
+      focused={focused}
+    />
   ),
 });
 

@@ -8,6 +8,7 @@ import {
 import React, { FC } from 'react';
 import { Fonts } from '../../styles/fonts';
 import { colors } from '../../styles/colors';
+import { rf } from '../../scale/responsive';
 
 interface Props {
   label: string;
@@ -38,7 +39,7 @@ export default TouchableText;
 const styles = StyleSheet.create({
   label: {
     fontFamily: Fonts.PoppinsMedium,
-    fontSize: 16,
+    fontSize: rf(14),
     color: colors.primaryText,
   },
 });

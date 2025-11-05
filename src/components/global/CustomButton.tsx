@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { colors } from '../../styles/colors';
 import { Fonts } from '../../styles/fonts';
+import { hp, wp, rf } from '../../scale/responsive';
 
 interface CustomButtonProps {
   title: string;
@@ -46,12 +47,12 @@ const CustomButton: React.FC<CustomButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: 8,
-    paddingVertical: 15,
-    paddingHorizontal: 30,
+    borderRadius: wp(2),
+    paddingVertical: hp(1.8),
+    paddingHorizontal: wp(7.5),
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 56,
+    minHeight: hp(5),
     backgroundColor: colors.blueBtn,
   },
   disabled: {
@@ -62,12 +63,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
-    gap: 5,
+    gap: wp(1.2),
   },
   text: {
     fontFamily: Fonts.PoppinsMedium,
-    fontSize: 16,
-    lineHeight: 20,
+    fontSize: rf(14),
+    lineHeight: rf(20),
     color: colors.white,
   },
 });

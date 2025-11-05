@@ -22,6 +22,7 @@ import makeRequest from '../../api/interceptor';
 import StorageService from '../../service/storage.service';
 import { ACCESS_TOKEN_KEY, endPoints } from '../../api/config';
 import { showAlert } from '../../utils/AlertUtil';
+import { hp, wp } from '../../scale/responsive';
 
 const LoginScreen: FC = () => {
   const [email, setEmail] = useState('');
@@ -79,7 +80,7 @@ const LoginScreen: FC = () => {
         await StorageService.setItem(ACCESS_TOKEN_KEY, token);
         showAlert({
           title: 'Success',
-          message: message,
+          message,
           onOkPress: () => navigate(Routes.Loader, { routes: Routes.MainApp }),
         });
       } else {
@@ -113,7 +114,7 @@ const LoginScreen: FC = () => {
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 70 : 0}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? hp(7) : 0}
       >
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
@@ -131,7 +132,7 @@ const LoginScreen: FC = () => {
               placeholder="Enter your email"
               keyboardType="email-address"
               autoCapitalize="none"
-              icon={<EmailIcon color={colors.primaryText} size={20} />}
+              icon={<EmailIcon color={colors.primaryText} size={wp(5)} />}
             />
 
             <CustomInput
@@ -142,7 +143,7 @@ const LoginScreen: FC = () => {
               placeholder="Enter your password"
               autoCapitalize="none"
               secureTextEntry
-              icon={<PasswordIcon color={colors.primaryText} size={20} />}
+              icon={<PasswordIcon color={colors.primaryText} size={wp(5)} />}
             />
 
             <TouchableText
@@ -173,26 +174,27 @@ const LoginScreen: FC = () => {
 export default LoginScreen;
 
 const styles = StyleSheet.create({
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingBottom: 30,
-  },
   flex: {
     flex: 1,
   },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingBottom: hp(3),
+  },
   container: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingVertical: 20,
+    paddingHorizontal: wp(5),
+    paddingVertical: hp(3),
     backgroundColor: colors.background,
   },
   btn: {
     backgroundColor: colors.blueBtn,
-    marginTop: 30,
+    marginTop: hp(4),
   },
   forgot: {
     textAlign: 'right',
     color: colors.blueText,
+    marginVertical: hp(1.5),
   },
 });

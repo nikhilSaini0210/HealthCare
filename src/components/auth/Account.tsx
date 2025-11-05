@@ -3,6 +3,7 @@ import React, { FC } from 'react';
 import TouchableText from '../global/TouchableText';
 import { Fonts } from '../../styles/fonts';
 import { colors } from '../../styles/colors';
+import { hp, rf, wp } from '../../scale/responsive';
 
 interface Props {
   title: string;
@@ -31,17 +32,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 5,
-    paddingVertical: 30,
+    gap: wp(1.3),
+    paddingVertical: hp(1),
   },
   title: {
     fontFamily: Fonts.PoppinsMedium,
-    fontSize: 14,
+    fontSize: rf(12),
     color: colors.primaryText,
   },
   label: {
     fontFamily: Fonts.PoppinsMedium,
-    fontSize: 14,
+    fontSize: rf(12),
     color: colors.blueText,
   },
 });

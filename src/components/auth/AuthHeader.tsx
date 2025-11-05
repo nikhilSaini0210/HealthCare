@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import React, { FC } from 'react';
 import { Fonts } from '../../styles/fonts';
 import { colors } from '../../styles/colors';
+import { hp, rf } from '../../scale/responsive';
 
 interface Props {
   titile: string;
@@ -27,16 +28,16 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: Fonts.PoppinsMedium,
-    fontSize: 24,
+    fontSize: rf(18),
     color: colors.primaryText,
     textAlign: 'center',
   },
   content: {
-    paddingVertical: 20,
+    paddingVertical: hp(2.5),
   },
   appName: {
     fontFamily: Fonts.PoppinsSemiBold,
-    fontSize: 50,
+    fontSize: rf(30),
     color: colors.primaryText,
     textAlign: 'center',
   },

@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     paddingTop: 14,
-    paddingBottom: 40,
+    paddingBottom: 80,
   },
   gridRow: {
     flexDirection: 'row',

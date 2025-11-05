@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { colors } from '../../styles/colors';
 import { Fonts } from '../../styles/fonts';
+import { hp, rf, wp } from '../../scale/responsive';
 
 interface Props extends TextInputProps {
   label?: string;
@@ -89,7 +90,7 @@ const CustomInput: React.FC<Props> = ({
 
   const errorTranslateY = errorAnimation.interpolate({
     inputRange: [0, 1],
-    outputRange: [-10, 0],
+    outputRange: [-hp(1.5), 0],
   });
 
   const errorOpacity = errorAnimation.interpolate({
@@ -143,34 +144,34 @@ const CustomInput: React.FC<Props> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 18,
+    marginVertical: hp(2),
   },
   label: {
-    fontSize: 14,
+    fontSize: rf(12),
     fontFamily: Fonts.RobotoRegular,
     color: colors.label,
-    marginBottom: 8,
+    marginBottom: hp(1),
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderRadius: 12,
+    borderWidth: wp(0.3),
+    borderRadius: wp(3),
     backgroundColor: colors.white,
-    minHeight: 56,
-    paddingHorizontal: 16,
+    minHeight: hp(6.5),
+    paddingHorizontal: wp(4),
   },
   inputContainerError: {
     borderColor: colors.error,
   },
   iconContainer: {
-    marginRight: 12,
+    marginRight: wp(3),
     justifyContent: 'center',
     alignItems: 'center',
   },
   input: {
     flex: 1,
-    fontSize: 16,
+    fontSize: rf(14),
     color: colors.primaryText,
     padding: 0,
     fontFamily: Fonts.RobotoRegular,
@@ -179,11 +180,11 @@ const styles = StyleSheet.create({
     paddingLeft: 0,
   },
   errorContainer: {
-    marginTop: 6,
-    paddingHorizontal: 4,
+    marginTop: hp(0.5),
+    paddingHorizontal: wp(1),
   },
   errorText: {
-    fontSize: 13,
+    fontSize: rf(13),
     color: colors.error,
     fontFamily: Fonts.RobotoRegular,
   },
