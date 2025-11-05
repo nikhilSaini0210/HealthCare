@@ -64,20 +64,27 @@ export const uploadToCloudinary = async ({
       throw new Error('File size must be less than 10MB');
     }
 
-    const base64 = await RNFS.readFile(filePath, 'base64');
-    const fileData = `data:${mimeType};base64,${base64}`;
-
     const formData = new FormData();
-    formData.append('file', fileData);
+
+    if (mimeType === 'application/pdf') {
+      formData.append('file', {
+        uri: fileUri,
+        name: fileName,
+        type: mimeType,
+      } as any);
+    } else {
+      const base64 = await RNFS.readFile(filePath, 'base64');
+      const fileData = `data:${mimeType};base64,${base64}`;
+      formData.append('file', fileData);
+    }
+
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
     formData.append('folder', 'prescriptions');
-    formData.append(
-      'resource_type',
-      mimeType === 'application/pdf' ? 'raw' : 'image',
-    );
+
+    const uploadType = mimeType === 'application/pdf' ? 'raw' : 'image';
 
     const response = await axios.post(
-      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`,
+      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${uploadType}/upload`,
       formData,
       {
         headers: { 'Content-Type': 'multipart/form-data' },

@@ -15,6 +15,13 @@ import EmptyState from '../../components/Reminder/EmptyState';
 import CustomLoader from '../../components/Loader/CustomLoader';
 import ReminderHeader from '../../components/Reminder/ReminderHeader';
 import CustomSafeAreaView from '../../components/global/CustomSafeAreaView';
+import { Prescription } from '../../types/interfaces';
+import CustomImageModal from '../../components/modal/CustomImageModal';
+import CustomPFModal from '../../components/modal/CustomPDFModal';
+import { Fonts } from '../../styles/fonts';
+import { colors } from '../../styles/colors';
+import PdfIcon from '../../assets/icons/PdfIcon';
+import Icon from '../../components/global/Icon';
 
 const statusGradients: Record<string, string[][]> = {
   pending: [
@@ -38,11 +45,14 @@ const statusGradients: Record<string, string[][]> = {
 const ReminderScreen: FC = () => {
   const [prescriptions, setPrescriptions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pdfModalVisible, setPdfModalVisible] = useState(false);
+  const [selectedPdfUri, setSelectedPdfUri] = useState<string | null>(null);
+  const [imageModalVisible, setImageModalVisible] = useState(false);
+  const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
   const animatedValues = useRef<Animated.Value[]>([]);
   const gradientOpacity = useRef(new Animated.Value(0)).current;
 
   const loadPrescriptions = useCallback(async () => {
-    setLoading(true);
     const data = await PrescriptionDB.getAll();
     setPrescriptions(data);
 
@@ -55,6 +65,7 @@ const ReminderScreen: FC = () => {
 
   useFocusEffect(
     useCallback(() => {
+      setLoading(true);
       loadPrescriptions();
     }, [loadPrescriptions]),
   );
@@ -88,6 +99,27 @@ const ReminderScreen: FC = () => {
     ).start();
   }, [gradientOpacity, prescriptions]);
 
+  const onPressCard = (item: Prescription) => {
+    if (item.type === 'image') {
+      setSelectedImageUri(item.fileUri);
+      setImageModalVisible(true);
+    } else if (item.type === 'pdf') {
+      setSelectedPdfUri(item.fileUri);
+      setPdfModalVisible(true);
+    } else {
+      setSelectedImageUri(null);
+      setImageModalVisible(false);
+      setSelectedPdfUri(null);
+      setPdfModalVisible(false);
+    }
+  };
+
+  const onPressDelete = async (item: Prescription) => {
+    await PrescriptionDB.remove(item.id);
+
+    await loadPrescriptions();
+  };
+
   const renderItem = ({ item, index }: { item: any; index: number }) => {
     const opacity = animatedValues.current[index];
     const translateY = opacity.interpolate({
@@ -111,26 +143,43 @@ const ReminderScreen: FC = () => {
           >
             <LinearGradient colors={gradient2} style={styles.gradient} />
           </Animated.View>
-          <TouchableOpacity style={styles.cardContent} activeOpacity={0.7}>
-            <Image
-              source={{ uri: item.thumbnailUri }}
-              style={styles.thumbnail}
-            />
+          <TouchableOpacity
+            onPress={() => onPressCard(item)}
+            style={styles.cardContent}
+            activeOpacity={0.7}
+          >
+            {item.type === 'image' ? (
+              <Image
+                source={{ uri: item.thumbnailUri }}
+                style={styles.thumbnail}
+              />
+            ) : (
+              <View style={styles.pdfCon}>
+                <PdfIcon size={50} />
+                <Text style={styles.subtitle}>{item.fileName}.pdf</Text>
+              </View>
+            )}
             <View style={styles.textContainer}>
               <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
-                {item.patientName} • {item.type.toUpperCase()}
+                {item.patientName}
               </Text>
-              <Text
-                style={styles.subtitle}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {item.fileName} — {item.notes}
-              </Text>
-              <Text style={styles.date} numberOfLines={1} ellipsizeMode="tail">
-                {new Date(item.reminderDate).toLocaleString()}
+              <Text style={styles.subtitle}>{item.notes}</Text>
+              <Text style={styles.subtitle}>Status: {item.status}</Text>
+              <Text style={styles.date} numberOfLines={2} ellipsizeMode="tail">
+                Reminder: {new Date(item.reminderDate).toLocaleString()}
               </Text>
             </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.delteTbn}
+            onPress={() => onPressDelete(item)}
+          >
+            <Icon
+              iconFamily="MaterialIcons"
+              name="delete"
+              color={colors.error}
+              size={24}
+            />
           </TouchableOpacity>
         </View>
       </Animated.View>
@@ -151,6 +200,24 @@ const ReminderScreen: FC = () => {
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={EmptyState}
+      />
+
+      <CustomImageModal
+        visible={imageModalVisible}
+        imageUri={selectedImageUri}
+        onClose={() => {
+          setImageModalVisible(false);
+          setSelectedImageUri(null);
+        }}
+      />
+
+      <CustomPFModal
+        visible={pdfModalVisible}
+        pdfUri={selectedPdfUri}
+        onClose={() => {
+          setSelectedPdfUri(null);
+          setPdfModalVisible(false);
+        }}
       />
     </CustomSafeAreaView>
   );
@@ -179,31 +246,47 @@ const styles = StyleSheet.create({
   gradient: {
     ...StyleSheet.absoluteFillObject,
   },
-  cardContent: {
-    flexDirection: 'row',
+  cardContent: {},
+  pdfCon: {
+    justifyContent: 'center',
     alignItems: 'center',
-    padding: 12,
+    marginTop: 20,
   },
   thumbnail: {
-    width: 56,
-    height: 56,
-    borderRadius: 6,
+    width: '100%',
+    height: 150,
   },
   textContainer: {
-    marginLeft: 12,
+    padding: 12,
     flex: 1,
   },
   title: {
-    fontWeight: '600',
+    fontFamily: Fonts.PoppinsSemiBold,
+    color: colors.primaryText,
     fontSize: 16,
   },
   subtitle: {
-    color: '#444',
+    color: colors.primaryText,
+    fontFamily: Fonts.RobotoRegular,
+    fontSize: 12,
     marginTop: 2,
+    lineHeight: 18,
   },
   date: {
-    color: '#666',
+    color: colors.primaryText,
+    fontFamily: Fonts.RobotoRegular,
     fontSize: 12,
     marginTop: 4,
+  },
+  delteTbn: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    backgroundColor: '#00000033',
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

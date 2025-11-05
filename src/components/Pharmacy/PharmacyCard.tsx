@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   },
   distance: {
     color: colors.secondaryText,
-     fontFamily: Fonts.RobotoRegular,
+    fontFamily: Fonts.RobotoRegular,
     fontSize: 12,
     marginVertical: 2,
   },

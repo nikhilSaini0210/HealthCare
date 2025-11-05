@@ -1,4 +1,10 @@
-import { StyleSheet, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import React, { FC, useState } from 'react';
 import CustomSafeAreaView from '../../components/global/CustomSafeAreaView';
 import AuthHeader from '../../components/auth/AuthHeader';
@@ -121,55 +127,67 @@ const RegisterScreen: FC = () => {
 
   return (
     <CustomSafeAreaView dismissKeyboard>
-      <View style={styles.container}>
-        <AuthHeader titile="REGISTER" />
-        <CustomInput
-          label="Email"
-          value={email}
-          onChangeText={validateEmail}
-          error={emailError}
-          placeholder="Enter your email"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          icon={<EmailIcon color={colors.primaryText} size={20} />}
-        />
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 70 : 0}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.container}>
+            <AuthHeader titile="REGISTER" />
+            <CustomInput
+              label="Email"
+              value={email}
+              onChangeText={validateEmail}
+              error={emailError}
+              placeholder="Enter your email"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              icon={<EmailIcon color={colors.primaryText} size={20} />}
+            />
 
-        <CustomInput
-          label="Password"
-          value={password}
-          onChangeText={validatePassword}
-          error={passwordError}
-          placeholder="Enter your password"
-          autoCapitalize="none"
-          secureTextEntry
-          icon={<PasswordIcon color={colors.primaryText} size={20} />}
-        />
+            <CustomInput
+              label="Password"
+              value={password}
+              onChangeText={validatePassword}
+              error={passwordError}
+              placeholder="Enter your password"
+              autoCapitalize="none"
+              secureTextEntry
+              icon={<PasswordIcon color={colors.primaryText} size={20} />}
+            />
 
-        <CustomInput
-          label="Confirm Password"
-          value={passwordConfirm}
-          onChangeText={validateConfirmPassword}
-          error={passwordConfirmError}
-          placeholder="Re-enter your password"
-          autoCapitalize="none"
-          secureTextEntry
-          icon={<PasswordIcon color={colors.primaryText} size={20} />}
-        />
+            <CustomInput
+              label="Confirm Password"
+              value={passwordConfirm}
+              onChangeText={validateConfirmPassword}
+              error={passwordConfirmError}
+              placeholder="Re-enter your password"
+              autoCapitalize="none"
+              secureTextEntry
+              icon={<PasswordIcon color={colors.primaryText} size={20} />}
+            />
 
-        <Account
-          title="Already have an account?"
-          label="Login here"
-          onPress={onLogin}
-          containerStyle={styles.account}
-        />
+            <Account
+              title="Already have an account?"
+              label="Login here"
+              onPress={onLogin}
+              containerStyle={styles.account}
+            />
 
-        <CustomButton
-          title="REGISTER"
-          onPress={onRegister}
-          style={styles.btn}
-          loading={loading}
-        />
-      </View>
+            <CustomButton
+              title="REGISTER"
+              onPress={onRegister}
+              style={styles.btn}
+              loading={loading}
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </CustomSafeAreaView>
   );
 };
@@ -177,6 +195,14 @@ const RegisterScreen: FC = () => {
 export default RegisterScreen;
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingBottom: 30,
+  },
+  flex: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     paddingHorizontal: 20,
@@ -185,12 +211,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     backgroundColor: colors.blueBtn,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    marginHorizontal: 20,
-    marginVertical: 12,
+    marginTop: 30,
   },
   account: {
     paddingVertical: 10,

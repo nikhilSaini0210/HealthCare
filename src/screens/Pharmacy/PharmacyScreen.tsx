@@ -28,10 +28,10 @@ import CustomButton from '../../components/global/CustomButton';
 import mime from 'mime';
 import { showAlert } from '../../utils/AlertUtil';
 import LinkInputModal from '../../components/modal/LinkInputModal';
-import Icon from '../../components/global/Icon';
 import TouchableText from '../../components/global/TouchableText';
 import mockPrescriptions from '../../utils/data';
 import PrescriptionDB from '../../service/prescription.service';
+import PdfIcon from '../../assets/icons/PdfIcon';
 
 const PharmacyScreen: FC = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -227,12 +227,7 @@ const PharmacyScreen: FC = () => {
           </View>
         ) : selectedDoc ? (
           <View style={styles.previewContainer}>
-            <Icon
-              iconFamily="MaterialIcons"
-              name="picture-as-pdf"
-              size={50}
-              color={colors.error}
-            />
+            <PdfIcon size={50} />
             <Text style={styles.pdfName}>
               {selectedDoc.split('/').pop()}.pdf
             </Text>

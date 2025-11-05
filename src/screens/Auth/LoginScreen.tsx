@@ -1,5 +1,11 @@
-import { StyleSheet, View } from 'react-native';
 import React, { FC, useState } from 'react';
+import {
+  StyleSheet,
+  View,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
 import CustomSafeAreaView from '../../components/global/CustomSafeAreaView';
 import { colors } from '../../styles/colors';
 import CustomInput from '../../components/global/CustomInput';
@@ -59,6 +65,7 @@ const LoginScreen: FC = () => {
       setPasswordError(!password ? 'Password is required' : '');
       return;
     }
+
     setLoading(true);
     try {
       const { response } = await makeRequest({
@@ -66,15 +73,14 @@ const LoginScreen: FC = () => {
         url: endPoints.login,
         data: { email, password },
       });
+
       if (response?.data.success) {
         const { token, message } = response?.data;
         await StorageService.setItem(ACCESS_TOKEN_KEY, token);
         showAlert({
           title: 'Success',
           message: message,
-          onOkPress: () => {
-            navigate(Routes.Loader, { routes: Routes.MainApp });
-          },
+          onOkPress: () => navigate(Routes.Loader, { routes: Routes.MainApp }),
         });
       } else {
         showAlert({
@@ -104,49 +110,62 @@ const LoginScreen: FC = () => {
 
   return (
     <CustomSafeAreaView dismissKeyboard>
-      <View style={styles.container}>
-        <AuthHeader titile="LOGIN" />
-        <CustomInput
-          label="Email"
-          value={email}
-          onChangeText={validateEmail}
-          error={emailError}
-          placeholder="Enter your email"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          icon={<EmailIcon color={colors.primaryText} size={20} />}
-        />
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 70 : 0}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.container}>
+            <AuthHeader titile="LOGIN" />
 
-        <CustomInput
-          label="Password"
-          value={password}
-          onChangeText={validatePassword}
-          error={passwordError}
-          placeholder="Enter your password"
-          autoCapitalize="none"
-          secureTextEntry
-          icon={<PasswordIcon color={colors.primaryText} size={20} />}
-        />
+            <CustomInput
+              label="Email"
+              value={email}
+              onChangeText={validateEmail}
+              error={emailError}
+              placeholder="Enter your email"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              icon={<EmailIcon color={colors.primaryText} size={20} />}
+            />
 
-        <TouchableText
-          label="Forgot Password!"
-          onPress={onForgetPassword}
-          labelStyle={styles.forgot}
-        />
+            <CustomInput
+              label="Password"
+              value={password}
+              onChangeText={validatePassword}
+              error={passwordError}
+              placeholder="Enter your password"
+              autoCapitalize="none"
+              secureTextEntry
+              icon={<PasswordIcon color={colors.primaryText} size={20} />}
+            />
 
-        <Account
-          title={`Don't Have an Account:`}
-          label={'Click here to register'}
-          onPress={onRegister}
-        />
+            <TouchableText
+              label="Forgot Password!"
+              onPress={onForgetPassword}
+              labelStyle={styles.forgot}
+            />
 
-        <CustomButton
-          loading={loading}
-          title="LOGIN"
-          onPress={onLogin}
-          style={styles.btn}
-        />
-      </View>
+            <Account
+              title={`Don't Have an Account:`}
+              label={'Click here to register'}
+              onPress={onRegister}
+            />
+
+            <CustomButton
+              loading={loading}
+              title="LOGIN"
+              onPress={onLogin}
+              style={styles.btn}
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </CustomSafeAreaView>
   );
 };
@@ -154,6 +173,14 @@ const LoginScreen: FC = () => {
 export default LoginScreen;
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingBottom: 30,
+  },
+  flex: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     paddingHorizontal: 20,
@@ -162,12 +189,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     backgroundColor: colors.blueBtn,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    marginHorizontal: 20,
-    marginVertical: 12,
+    marginTop: 30,
   },
   forgot: {
     textAlign: 'right',

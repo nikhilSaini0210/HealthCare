@@ -11,8 +11,11 @@ import { Fonts } from '../../styles/fonts';
 import CustomButton from '../../components/global/CustomButton';
 import DoctorIcon from '../../assets/icons/DoctorIcon';
 import BottleIcon from '../../assets/icons/BottleIcon';
-import { navigate } from '../../utils/NavigationUtil';
+import { navigate, resetAndNavigate } from '../../utils/NavigationUtil';
 import { Routes } from '../../navigation/Routes';
+import StorageService from '../../service/storage.service';
+import { ACCESS_TOKEN_KEY } from '../../api/config';
+import { showAlert } from '../../utils/AlertUtil';
 
 const HomeScreen: FC = () => {
   const onPressTab = (value: string) => {
@@ -21,10 +24,24 @@ const HomeScreen: FC = () => {
     }
   };
 
+  const onMenu = async () => {
+    showAlert({
+      title: 'Logout',
+      message: 'Do you want to Logout?',
+      showCancel: true,
+      cancelText: 'No',
+      okText: 'Yes',
+      onOkPress: async () => {
+        await StorageService.removeItem(ACCESS_TOKEN_KEY);
+        resetAndNavigate(Routes.Login);
+      },
+    });
+  };
+
   return (
     <CustomSafeAreaView dismissKeyboard={false}>
       <View style={styles.container}>
-        <HomeHeader />
+        <HomeHeader onMenu={onMenu} />
         <ScrollView
           contentContainerStyle={styles.scrollView}
           showsVerticalScrollIndicator={false}
