@@ -1,0 +1,22 @@
+export const colors = {
+  primary: '#1db954',
+  accent: '#ff007f',
+  dark: '#0b0b0b',
+  lightGray: '#f4f4f4',
+  blueBtn: '#3b82f6',
+  greenBtn: '#22c55e',
+  background: '#ECECEC',
+  error: '#EF4444',
+  primaryText: '#111827',
+  label: '#374151',
+  placeholder: '#9CA3AF',
+  secondaryText: '#',
+  white: '#FFFFFF',
+  borderInactive: '#E5E7EB',
+  borderActive: '#3B82F6',
+  iconColor: '#6B7280',
+  disabled: '#2a2a2a',
+  activeTab: '#47C2C4',
+  inActiveTab: '#3C3B3B',
+  bottomTabBackground: '#D9D9D9'
+};
