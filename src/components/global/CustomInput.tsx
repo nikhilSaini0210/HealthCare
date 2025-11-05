@@ -143,7 +143,7 @@ const CustomInput: React.FC<Props> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 16,
+    marginVertical: 18,
   },
   label: {
     fontSize: 14,

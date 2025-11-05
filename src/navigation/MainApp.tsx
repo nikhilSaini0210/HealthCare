@@ -7,6 +7,7 @@ import { Routes } from './Routes';
 import HomeScreen from '../screens/Home/HomeScreen';
 import PharmacyScreen from '../screens/Pharmacy/PharmacyScreen';
 import TabBarIcon from './TabBarIcon';
+import DefaultScreen from '../screens/Default/DefaultScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -33,8 +34,8 @@ const screenOptions = ({
 const MainApp: FC = () => (
   <Tab.Navigator screenOptions={screenOptions}>
     <Tab.Screen name={Routes.Home} component={HomeScreen} />
-    <Tab.Screen name={Routes.Default} component={HomeScreen} />
-    <Tab.Screen name={Routes.Reminder} component={HomeScreen} />
+    <Tab.Screen name={Routes.Default} component={DefaultScreen} />
+    <Tab.Screen name={Routes.DefaultB} component={DefaultScreen} />
     <Tab.Screen name={Routes.Pharmacy} component={PharmacyScreen} />
   </Tab.Navigator>
 );

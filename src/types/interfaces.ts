@@ -23,3 +23,8 @@ export interface IconProps {
   size?: number;
   color?: string;
 }
+
+export interface SectionsProps {
+    id: number;
+    label: string;
+}

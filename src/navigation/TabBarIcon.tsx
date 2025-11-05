@@ -24,7 +24,7 @@ const TabBarIcon: FC<TabBarIconProps> = ({ name, color, size, focused }) => {
         return <HomeIcon color={color} size={size} />;
       case Routes.Default:
         return <CalendarIcon color={color} size={size} />;
-      case Routes.Reminder:
+      case Routes.DefaultB:
         return <DocumentIcon color={color} size={size} />;
       case Routes.Pharmacy:
         return <MessageIcon color={color} size={size} />;

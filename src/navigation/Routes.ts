@@ -1,4 +1,5 @@
 export enum Routes {
+  Loader = '_loader',
   Splash = '_splash',
   MainApp = '_main_app',
   Login = '_login',
@@ -7,4 +8,5 @@ export enum Routes {
   Reminder = '_reminder',
   Pharmacy = '_pharmacy',
   Default = '_default',
+  DefaultB = '_defaultb',
 }
